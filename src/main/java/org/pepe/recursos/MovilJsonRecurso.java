@@ -9,7 +9,7 @@ import org.pepe.Models.Movil;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-
+@Path("/moviljson")
 public class MovilJsonRecurso {
     List<Movil> listaMoviles = new ArrayList<Movil>();
     @GET
@@ -23,7 +23,7 @@ public class MovilJsonRecurso {
     @Produces(MediaType.APPLICATION_JSON)
     public Response agregarMovil(Movil movil){
         listaMoviles.add(movil);
-        return Response.created(URI.create("/"+movil.getId())).build();
+        return Response.created(URI.create("/moviljson/"+movil.getId())).build();
     }
 
     @PUT
@@ -43,7 +43,31 @@ public class MovilJsonRecurso {
             //// Eliminar elemento original
             listaMoviles.remove(original);
             //// Agregar nuevo elemento
+            movil_nuevo.setId(id_numerico);
             listaMoviles.add(movil_nuevo);
+            // return
+            return Response.noContent().build();//204
+        }catch(Exception e){
+            e.printStackTrace();
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+    @DELETE
+    @Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response eliminarMovil(@PathParam("id") String id){
+        try{
+            int id_numerico = Integer.parseInt(id);
+            // Reemplazo
+            //// Encontrar elemento original
+            Movil original = null;
+            for(Movil m : listaMoviles)
+                if(m.getId() == id_numerico)
+                    original = m;
+            if(original == null)
+                return Response.status(Response.Status.NOT_FOUND).build();
+            //// Eliminar elemento original
+            listaMoviles.remove(original);
             // return
             return Response.noContent().build();//204
         }catch(Exception e){
